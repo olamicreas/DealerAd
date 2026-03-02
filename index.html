@@ -183,6 +183,7 @@
                     <div id="banner-capture" style="container-type: inline-size; width: 100%;" class="@container aspect-square relative flex flex-col bg-[#111318] overflow-hidden banner-font">
                         
                         <!-- --- TOP BANNER --- -->
+                        <!-- Adjusted height slightly to 21% to fit 3 lines perfectly -->
                         <div class="h-[21%] w-full bg-[#111318] relative z-20 flex items-center shadow-2xl shrink-0">
                             <!-- Left edge angled accents -->
                             <div class="absolute left-[-2cqi] top-0 h-full w-[3cqi] bg-[#dc2626] -skew-x-[15deg]"></div>
@@ -234,9 +235,10 @@
 
                         <!-- --- MIDDLE IMAGE --- -->
                         <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
-                            <!-- Removed crossorigin to ensure local base64 images work flawlessly -->
+                            <!-- Included crossorigin="anonymous" to safely render external URL -->
                             <img 
                                 id="carImageDisplay"
+                                crossorigin="anonymous"
                                 src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop" 
                                 alt="Vehicle" 
                                 class="absolute inset-0 w-full h-full object-cover"
@@ -255,6 +257,7 @@
                         </div>
 
                         <!-- --- BOTTOM BANNER --- -->
+                        <!-- Adjusted to 16% to fit Badge + Address -->
                         <div class="h-[16%] w-full bg-[#111318] relative z-20 flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.3)] shrink-0">
                             <!-- Top separator line -->
                             <div class="absolute top-0 left-0 w-full h-[0.5cqi] bg-white opacity-80"></div>
@@ -345,11 +348,21 @@
             }
         });
 
-        // ==========================================
-        // AUTO IMAGE COMPRESSOR & FIXER
-        // Fixes the "There was an error generating image" bug 
-        // by securely shrinking heavy camera/phone photos before export
-        // ==========================================
+        // 1. Convert Unsplash default image to base64 immediately on load to prevent external CORS errors
+        (async function preloadDefaultImage() {
+            try {
+                const img = document.getElementById('carImageDisplay');
+                const res = await fetch(img.src);
+                const blob = await res.blob();
+                const reader = new FileReader();
+                reader.onloadend = () => { img.src = reader.result; }
+                reader.readAsDataURL(blob);
+            } catch(e) {
+                console.warn("Could not preload default image as base64.", e);
+            }
+        })();
+
+        // 2. Safely Process User Uploaded Images
         const imageUpload = document.getElementById('imageUpload');
         const carImageDisplay = document.getElementById('carImageDisplay');
 
@@ -361,7 +374,7 @@
                     const img = new Image();
                     img.onload = function() {
                         const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 1080; // Optimal max dimension for banner images
+                        const MAX_SIZE = 1200; // Optimal limit to avoid RAM crashes
                         let width = img.width;
                         let height = img.height;
 
@@ -382,7 +395,6 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
                         
-                        // Converts to optimized base64
                         carImageDisplay.src = canvas.toDataURL('image/jpeg', 0.85);
                     };
                     img.src = event.target.result;
@@ -401,7 +413,7 @@
             carImageDisplay.style.objectPosition = `center ${value}%`;
         });
 
-        // Download Banner Logic (Uses html-to-image for perfect CQI rendering)
+        // 3. SECURE DOWNLOAD LOGIC
         const downloadBtn = document.getElementById('downloadBtn');
         const bannerCapture = document.getElementById('banner-capture');
 
@@ -418,6 +430,8 @@
             lucide.createIcons();
 
             // Lock pixel dimensions to force browser to render exact proportions 
+            const originalWidth = bannerCapture.style.width;
+            const originalHeight = bannerCapture.style.height;
             const rect = bannerCapture.getBoundingClientRect();
             bannerCapture.style.width = rect.width + 'px';
             bannerCapture.style.height = rect.height + 'px';
@@ -426,25 +440,29 @@
                 // Wait for custom fonts to fully render
                 await document.fonts.ready;
 
+                // CRITICAL FIXES:
+                // cacheBust MUST be false. When it's true, it breaks base64 strings and throws the Target Error.
+                // pixelRatio lowered to 2 to prevent "canvas too large" memory crashes on mobile devices.
                 const dataUrl = await window.htmlToImage.toPng(bannerCapture, {
                     quality: 1,
-                    pixelRatio: 3, // 3x multiplier for incredibly crisp, high-resolution text
-                    cacheBust: true,
+                    pixelRatio: 2, 
+                    cacheBust: false, // DO NOT CHANGE: Breaks Base64 images if true
+                    backgroundColor: '#111318'
                 });
 
                 // Convert to Image & Download
                 const link = document.createElement('a');
-                link.download = `ola-motors-ad-${Date.now()}.png`;
+                link.download = `auto-banner-${Date.now()}.png`;
                 link.href = dataUrl;
                 link.click();
 
             } catch (err) {
                 console.error("Error generating image:", err);
-                alert("There was an error generating the image. Check console for details.");
+                alert("There was an error generating the image. Please try again.");
             } finally {
                 // Restore dynamic sizing
-                bannerCapture.style.width = '100%';
-                bannerCapture.style.height = '';
+                bannerCapture.style.width = originalWidth;
+                bannerCapture.style.height = originalHeight;
                 
                 // Restore UI State
                 downloadBtn.innerHTML = originalHTML;
