@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Dealer Ad Creator</title>
+    
+    <!-- Tailwind CSS with Container Queries Plugin explicitly enabled -->
+    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+    
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom Scrollbar for the controls panel */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* Banner Font Setup */
+        .banner-font {
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+
+        /* Webkit Text Stroke Utility */
+        .text-stroke-white {
+            -webkit-text-stroke: 0.3cqi white;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 text-gray-900 font-sans p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <i data-lucide="layout" class="w-6 h-6 text-blue-600"></i>
+                    Auto Dealer Ad Creator
+                </h1>
+                <p class="text-sm text-gray-500 mt-1">Customize the text, upload your vehicle image, and download a ready-to-post banner.</p>
+            </div>
+            <button id="downloadBtn" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-sm w-full md:w-auto">
+                <i data-lucide="download" class="w-5 h-5"></i> Download Ad
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Controls Panel -->
+            <div class="lg:col-span-5 space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit max-h-[80vh] overflow-y-auto custom-scrollbar">
+                
+                <!-- Image Controls -->
+                <section class="space-y-4">
+                    <h2 class="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+                        <i data-lucide="image" class="w-4 h-4"></i> Vehicle Image
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i data-lucide="upload" class="w-8 h-8 text-gray-400 mb-2"></i>
+                                    <p class="text-sm text-gray-600 font-medium">Click to upload car photo</p>
+                                    <p class="text-xs text-gray-400">PNG, JPG, WEBP</p>
+                                </div>
+                                <input type="file" id="imageUpload" class="hidden" accept="image/*" />
+                            </label>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <label class="font-medium text-gray-700">Image Vertical Position</label>
+                                <span class="text-gray-500" id="posYLabel">50%</span>
+                            </div>
+                            <input 
+                                type="range" 
+                                id="imagePositionSlider"
+                                min="0" max="100" 
+                                value="50"
+                                class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            />
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-gray-100" />
+
+                <!-- Top Banner Details -->
+                <section class="space-y-4">
+                    <h2 class="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+                        <i data-lucide="type" class="w-4 h-4"></i> Top Details (Vehicle & Price)
+                    </h2>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Subtitle / Offer Type</label>
+                            <input type="text" id="dealerTextInput" value="MANAGER SPECIAL :" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Vehicle Name</label>
+                            <input type="text" id="locationTextInput" value="2008 JEEP WRANGLER" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Price Amount</label>
+                                <input type="text" id="monthlyPriceInput" value="$9800" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold text-green-700" />
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Label 1</label>
+                                    <input type="text" id="monthlyLabelInput" value="CASH" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Label 2</label>
+                                    <input type="text" id="wacTextInput" value="PRICE" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="border-gray-100" />
+
+                <!-- Bottom Banner Details -->
+                <section class="space-y-4">
+                    <h2 class="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
+                        <i data-lucide="settings" class="w-4 h-4"></i> Bottom Details (Location & Contact)
+                    </h2>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Mileage Subtitle</label>
+                            <input type="text" id="downPaymentLabelInput" value="MILEAGE: 126,123 MILES" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Address</label>
+                            <input type="text" id="downPaymentAmountInput" value="2760 GOVERNMENT BLVD MOBILE AL 36606" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Icon/Emoji</label>
+                                <input type="text" id="creditScoreInput" value="📞" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-center" />
+                            </div>
+                            <div class="col-span-2 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Contact Line 1</label>
+                                    <input type="text" id="creditText1Input" value="CALL" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Phone Number</label>
+                                    <input type="text" id="creditText2Input" value="251-287-1062" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="lg:col-span-7 flex flex-col items-center justify-start lg:sticky lg:top-8">
+                <div class="w-full max-w-[600px] shadow-2xl rounded-lg overflow-hidden border-4 border-gray-800 bg-black">
+                    
+                    <!-- === THE BANNER COMPONENT === -->
+                    <div id="banner-capture" style="container-type: inline-size; width: 100%;" class="@container aspect-square relative flex flex-col bg-[#111318] overflow-hidden banner-font">
+                        
+                        <!-- --- TOP BANNER --- -->
+                        <div class="h-[18%] w-full bg-[#111318] relative z-20 flex items-center shadow-2xl shrink-0">
+                            <!-- Left edge angled accents -->
+                            <div class="absolute left-[-2cqi] top-0 h-full w-[3cqi] bg-[#2962ff] -skew-x-[15deg]"></div>
+                            <div class="absolute left-[1.5cqi] top-0 h-full w-[0.5cqi] bg-white -skew-x-[15deg] opacity-80"></div>
+
+                            <div class="pl-[6cqi] pr-[4cqi] w-full flex justify-between items-center h-full">
+                                
+                                <!-- Top Left Text (Vehicle) -->
+                                <!-- Removed truncate, added whitespace-nowrap and overflow-visible to prevent clipping on export -->
+                                <div class="flex flex-col justify-center -mt-[1cqi] w-[55cqi]">
+                                    <span id="dealerTextDisplay" class="text-white text-[3.2cqi] font-[900] italic uppercase leading-none tracking-wide ml-[0.5cqi] whitespace-nowrap overflow-visible">
+                                        MANAGER SPECIAL :
+                                    </span>
+                                    <span id="locationTextDisplay" class="text-[#8bbbe4] text-[6.2cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi]">
+                                        2008 JEEP WRANGLER
+                                    </span>
+                                </div>
+
+                                <!-- Top Right Pricing Box -->
+                                <div class="flex items-start gap-[1cqi] mr-[1cqi]">
+                                    <div class="flex flex-col items-end pt-[1cqi]">
+                                        <span id="monthlyLabelDisplay" class="text-[#8bbbe4] text-[2.8cqi] font-[900] italic uppercase leading-none whitespace-nowrap">
+                                            CASH
+                                        </span>
+                                        <span id="wacTextDisplay" class="text-white text-[2.2cqi] font-[900] italic uppercase leading-tight mr-[0.5cqi] whitespace-nowrap">
+                                            PRICE
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="bg-white px-[3cqi] py-[1cqi] shadow-lg -skew-x-[12deg] flex items-center justify-center border-b-[0.5cqi] border-r-[0.5cqi] border-gray-200">
+                                        <span id="monthlyPriceDisplay" class="text-[#5b7b41] text-[6.5cqi] font-[900] italic uppercase skew-x-[12deg] tracking-tighter leading-none pt-[0.5cqi] whitespace-nowrap">
+                                            $9800
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Separator line from image -->
+                            <div class="absolute bottom-0 left-0 w-full h-[0.5cqi] bg-white opacity-80 z-30"></div>
+                        </div>
+
+                        <!-- --- MIDDLE IMAGE --- -->
+                        <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
+                            <img 
+                                id="carImageDisplay"
+                                src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop" 
+                                alt="Vehicle" 
+                                class="absolute inset-0 w-full h-full object-cover"
+                                style="object-position: center 50%;"
+                                crossorigin="anonymous"
+                            />
+                            <!-- Subtle inner shadows for blending -->
+                            <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent"></div>
+                            <div class="absolute inset-x-0 bottom-0 h-[5cqi] bg-gradient-to-t from-black/40 to-transparent"></div>
+                        </div>
+
+                        <!-- --- BOTTOM BANNER --- -->
+                        <div class="h-[16%] w-full bg-[#111318] relative z-20 flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.3)] shrink-0">
+                            <!-- Top separator line -->
+                            <div class="absolute top-0 left-0 w-full h-[0.5cqi] bg-white opacity-80"></div>
+                            
+                            <!-- Blue skewed divider -->
+                            <div class="absolute left-[68cqi] bottom-0 h-full w-[1.5cqi] bg-[#1e40af] -skew-x-[20deg] z-0 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]"></div>
+
+                            <div class="w-full flex items-center justify-between px-[4cqi] relative z-10 h-full">
+                                
+                                <!-- Bottom Left Content (Address & Mileage) -->
+                                <div class="flex flex-col justify-center gap-[0.5cqi] w-[62cqi]">
+                                    <div class="flex items-center gap-[2cqi]">
+                                        <span id="downPaymentLabelDisplay" class="text-white text-[2.6cqi] font-[900] italic uppercase leading-none whitespace-nowrap">
+                                            MILEAGE: 126,123 MILES
+                                        </span>
+                                        <div class="flex-1 h-[0.3cqi] bg-white opacity-40"></div>
+                                    </div>
+                                    
+                                    <!-- Removed truncate, added whitespace-nowrap and overflow-visible -->
+                                    <span id="downPaymentAmountDisplay" class="text-[#8bbbe4] text-[3.8cqi] font-[900] italic uppercase leading-none tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi]">
+                                        2760 GOVERNMENT BLVD MOBILE AL 36606
+                                    </span>
+                                </div>
+
+                                <!-- Bottom Right Content (Phone) -->
+                                <div class="flex items-center gap-[1.5cqi] w-[26cqi] pl-[1cqi]">
+                                    <span id="creditScoreDisplay" class="text-white text-[5cqi] font-sans mb-[0.5cqi] whitespace-nowrap">
+                                        📞
+                                    </span>
+                                    
+                                    <div class="flex flex-col justify-center gap-[0.2cqi]">
+                                        <span id="creditText1Display" class="text-[#8bbbe4] text-[3.2cqi] font-[900] italic uppercase leading-[0.85] tracking-tight text-stroke-white whitespace-nowrap">
+                                            CALL
+                                        </span>
+                                        <span id="creditText2Display" class="text-white text-[3.5cqi] font-[900] italic uppercase leading-[0.85] tracking-tight whitespace-nowrap">
+                                            251-287-1062
+                                        </span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- === END BANNER COMPONENT === -->
+                </div>
+                
+                <p class="text-sm text-gray-400 mt-4 font-medium flex gap-2 items-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Live Preview Aspect Ratio (1:1)
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Data binding configuration
+        const bindings = [
+            { inputId: 'dealerTextInput', displayId: 'dealerTextDisplay' },
+            { inputId: 'locationTextInput', displayId: 'locationTextDisplay' },
+            { inputId: 'monthlyPriceInput', displayId: 'monthlyPriceDisplay' },
+            { inputId: 'monthlyLabelInput', displayId: 'monthlyLabelDisplay' },
+            { inputId: 'wacTextInput', displayId: 'wacTextDisplay' },
+            { inputId: 'downPaymentLabelInput', displayId: 'downPaymentLabelDisplay' },
+            { inputId: 'downPaymentAmountInput', displayId: 'downPaymentAmountDisplay' },
+            { inputId: 'creditScoreInput', displayId: 'creditScoreDisplay' },
+            { inputId: 'creditText1Input', displayId: 'creditText1Display' },
+            { inputId: 'creditText2Input', displayId: 'creditText2Display' },
+        ];
+
+        // Apply two-way bindings for text
+        bindings.forEach(binding => {
+            const inputEl = document.getElementById(binding.inputId);
+            const displayEl = document.getElementById(binding.displayId);
+            
+            if (inputEl && displayEl) {
+                inputEl.addEventListener('input', (e) => {
+                    displayEl.textContent = e.target.value;
+                });
+            }
+        });
+
+        // Image Upload Logic
+        const imageUpload = document.getElementById('imageUpload');
+        const carImageDisplay = document.getElementById('carImageDisplay');
+
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                carImageDisplay.src = imageUrl;
+            }
+        });
+
+        // Image Position Slider Logic
+        const positionSlider = document.getElementById('imagePositionSlider');
+        const posYLabel = document.getElementById('posYLabel');
+
+        positionSlider.addEventListener('input', (e) => {
+            const value = e.target.value;
+            posYLabel.textContent = `${value}%`;
+            carImageDisplay.style.objectPosition = `center ${value}%`;
+        });
+
+        // Download Banner Logic
+        const downloadBtn = document.getElementById('downloadBtn');
+        const bannerCapture = document.getElementById('banner-capture');
+
+        downloadBtn.addEventListener('click', async () => {
+            if (typeof html2canvas === 'undefined') {
+                alert("The image generation library is still loading. Please try again in a second.");
+                return;
+            }
+
+            // UI State change
+            const originalHTML = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Generating...';
+            downloadBtn.disabled = true;
+            lucide.createIcons();
+
+            // FIX: Lock the exact pixel dimensions before capturing. 
+            // This prevents the container query (cqi) units from failing inside the hidden clone that html2canvas creates.
+            const rect = bannerCapture.getBoundingClientRect();
+            bannerCapture.style.width = rect.width + 'px';
+            bannerCapture.style.height = rect.height + 'px';
+
+            // Wait for custom fonts to fully render
+            await document.fonts.ready;
+
+            try {
+                // Generate Canvas
+                const canvas = await html2canvas(bannerCapture, {
+                    scale: 2, // 2x scale for high resolution
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: rect.width,
+                    height: rect.height,
+                    onclone: (clonedDoc) => {
+                        // Ensure the cloned node also respects the locked pixel sizes
+                        const clonedBanner = clonedDoc.getElementById('banner-capture');
+                        if (clonedBanner) {
+                            clonedBanner.style.width = rect.width + 'px';
+                            clonedBanner.style.height = rect.height + 'px';
+                        }
+                    }
+                });
+
+                // Convert to Image & Download
+                const imageURL = canvas.toDataURL('image/png', 1.0);
+                const link = document.createElement('a');
+                link.download = `car-banner-${Date.now()}.png`;
+                link.href = imageURL;
+                link.click();
+
+            } catch (err) {
+                console.error("Error generating image:", err);
+                alert("There was an error generating the image. Check console for details.");
+            } finally {
+                // Restore the original dynamic size
+                bannerCapture.style.width = '100%';
+                bannerCapture.style.height = '';
+                
+                // Restore UI State
+                downloadBtn.innerHTML = originalHTML;
+                downloadBtn.disabled = false;
+                lucide.createIcons(); 
+            }
+        });
+    </script>
+</body>
+</html>
+
+
