@@ -11,8 +11,8 @@
     <!-- Google Fonts: Barlow Condensed (Original impact font for everything) -->
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
     
-    <!-- html-to-image (100% pixel-perfect export of modern CSS) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <!-- html2canvas (Reverted to the most stable engine to prevent image load crashes) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -234,9 +234,10 @@
 
                         <!-- --- MIDDLE IMAGE --- -->
                         <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
-                            <!-- Removed crossorigin to ensure local base64 images work flawlessly -->
+                            <!-- crossorigin="anonymous" is critical for default image export -->
                             <img 
                                 id="carImageDisplay"
+                                crossorigin="anonymous"
                                 src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop" 
                                 alt="Vehicle" 
                                 class="absolute inset-0 w-full h-full object-cover"
@@ -246,7 +247,7 @@
                             <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
                             <div class="absolute inset-x-0 bottom-0 h-[10cqi] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
 
-                            <!-- Website Overlay: Moved completely down to the line (bottom-0) -->
+                            <!-- Website Overlay: Pushed to the line -->
                             <div class="absolute inset-x-0 bottom-0 z-20 flex justify-center w-full px-[4cqi]">
                                 <span id="websiteDisplay" class="text-white text-[7cqi] font-[900] italic uppercase tracking-widest leading-none whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
                                     WWW.OLAMOTORSUS.COM
@@ -345,58 +346,18 @@
             }
         });
 
-        // 1. Convert Unsplash default image to base64 immediately on load to prevent external CORS errors
-        (async function preloadDefaultImage() {
-            try {
-                const img = document.getElementById('carImageDisplay');
-                const res = await fetch(img.src);
-                const blob = await res.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => { img.src = reader.result; }
-                reader.readAsDataURL(blob);
-            } catch(e) {
-                console.warn("Could not preload default image as base64.", e);
-            }
-        })();
-
-        // 2. Safely Process User Uploaded Images
+        // Simplified Image Upload - Creates a completely safe, local URL
         const imageUpload = document.getElementById('imageUpload');
         const carImageDisplay = document.getElementById('carImageDisplay');
 
         imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 1200; // Optimal limit to avoid RAM crashes
-                        let width = img.width;
-                        let height = img.height;
-
-                        if (width > height) {
-                            if (width > MAX_SIZE) {
-                                height *= MAX_SIZE / width;
-                                width = MAX_SIZE;
-                            }
-                        } else {
-                            if (height > MAX_SIZE) {
-                                width *= MAX_SIZE / height;
-                                height = MAX_SIZE;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
-                        carImageDisplay.src = canvas.toDataURL('image/jpeg', 0.85);
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                // Object URLs don't trigger CORS blocks in html2canvas!
+                const imageUrl = URL.createObjectURL(file);
+                // Remove crossorigin attribute when using local uploaded images
+                carImageDisplay.removeAttribute('crossorigin');
+                carImageDisplay.src = imageUrl;
             }
         });
 
@@ -410,12 +371,12 @@
             carImageDisplay.style.objectPosition = `center ${value}%`;
         });
 
-        // 3. SECURE DOWNLOAD LOGIC
+        // Perfect Download Logic - Using html2canvas with computed style locking
         const downloadBtn = document.getElementById('downloadBtn');
         const bannerCapture = document.getElementById('banner-capture');
 
         downloadBtn.addEventListener('click', async () => {
-            if (typeof window.htmlToImage === 'undefined') {
+            if (typeof html2canvas === 'undefined') {
                 alert("The image generation library is still loading. Please try again in a second.");
                 return;
             }
@@ -426,28 +387,47 @@
             downloadBtn.disabled = true;
             lucide.createIcons();
 
-            // Lock pixel dimensions to force browser to render exact proportions 
-            const originalWidth = bannerCapture.style.width;
-            const originalHeight = bannerCapture.style.height;
-            const rect = bannerCapture.getBoundingClientRect();
-            bannerCapture.style.width = rect.width + 'px';
-            bannerCapture.style.height = rect.height + 'px';
-
             try {
                 // Wait for custom fonts to fully render
                 await document.fonts.ready;
 
-                // CRITICAL FIXES:
-                // cacheBust MUST be false. When it's true, it breaks base64 strings and throws the Target Error.
-                // pixelRatio lowered to 2 to prevent "canvas too large" memory crashes on mobile devices.
-                const dataUrl = await window.htmlToImage.toPng(bannerCapture, {
-                    quality: 1,
-                    pixelRatio: 2, 
-                    cacheBust: false, // DO NOT CHANGE: Breaks Base64 images if true
-                    backgroundColor: '#111318'
+                const rect = bannerCapture.getBoundingClientRect();
+
+                // html2canvas rendering
+                const canvas = await html2canvas(bannerCapture, {
+                    scale: 2, 
+                    useCORS: true,
+                    allowTaint: true,
+                    width: rect.width,
+                    height: rect.height,
+                    backgroundColor: '#111318',
+                    onclone: (clonedDoc) => {
+                        const clonedBanner = clonedDoc.getElementById('banner-capture');
+                        
+                        // Force exact layout dimensions in the clone
+                        clonedBanner.style.width = rect.width + 'px';
+                        clonedBanner.style.height = rect.height + 'px';
+
+                        // CRITICAL FIX: Transfer computed font sizes directly to the clone. 
+                        // This prevents html2canvas from losing track of the cqi container queries.
+                        const origNodes = bannerCapture.querySelectorAll('*');
+                        const cloneNodes = clonedBanner.querySelectorAll('*');
+
+                        for (let i = 0; i < origNodes.length; i++) {
+                            const comp = window.getComputedStyle(origNodes[i]);
+                            cloneNodes[i].style.fontSize = comp.fontSize;
+                            cloneNodes[i].style.lineHeight = comp.lineHeight;
+                            
+                            // Make sure text strokes transfer perfectly
+                            if (comp.webkitTextStrokeWidth && comp.webkitTextStrokeWidth !== '0px') {
+                                cloneNodes[i].style.webkitTextStroke = comp.webkitTextStroke;
+                            }
+                        }
+                    }
                 });
 
                 // Convert to Image & Download
+                const dataUrl = canvas.toDataURL('image/png', 1.0);
                 const link = document.createElement('a');
                 link.download = `ola-motors-ad-${Date.now()}.png`;
                 link.href = dataUrl;
@@ -455,12 +435,8 @@
 
             } catch (err) {
                 console.error("Error generating image:", err);
-                alert("There was an error generating the image. Please try again.");
+                alert("There was an error generating the image. Please check your browser console for details.");
             } finally {
-                // Restore dynamic sizing
-                bannerCapture.style.width = originalWidth;
-                bannerCapture.style.height = originalHeight;
-                
                 // Restore UI State
                 downloadBtn.innerHTML = originalHTML;
                 downloadBtn.disabled = false;
