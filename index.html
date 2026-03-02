@@ -247,9 +247,9 @@
                             <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
                             <div class="absolute inset-x-0 bottom-0 h-[10cqi] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
 
-                            <!-- Website Overlay: Made Plain White, original font -->
-                            <div class="absolute inset-x-0 bottom-[2.5cqi] z-20 flex justify-center w-full px-[4cqi]">
-                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase tracking-widest whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
+                            <!-- Website Overlay: Pushed all the way down to the line -->
+                            <div class="absolute inset-x-0 bottom-[0.5cqi] z-20 flex justify-center w-full px-[4cqi]">
+                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase leading-none tracking-widest whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
                                     WWW.OLAMOTORSUS.COM
                                 </span>
                             </div>
@@ -347,15 +347,21 @@
             }
         });
 
-        // Image Upload Logic
+        // FIX FOR DOWNLOAD ERRORS:
+        // Convert the uploaded image directly to a Base64 string instead of a temporary blob URL.
+        // This entirely bypasses browser CORS/Security blocks during image export.
         const imageUpload = document.getElementById('imageUpload');
         const carImageDisplay = document.getElementById('carImageDisplay');
 
         imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                const imageUrl = URL.createObjectURL(file);
-                carImageDisplay.src = imageUrl;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    // Set the image source directly to the Base64 data string
+                    carImageDisplay.src = event.target.result;
+                };
+                reader.readAsDataURL(file); // Start reading the file
             }
         });
 
@@ -394,11 +400,11 @@
                 // Wait for custom fonts to fully render
                 await document.fonts.ready;
 
-                // htmlToImage uses native browser SVG rendering to guarantee the exact same look as the preview
+                // htmlToImage settings (Removed cacheBust as it interferes with Base64 blobs)
                 const dataUrl = await window.htmlToImage.toPng(bannerCapture, {
                     quality: 1,
                     pixelRatio: 3, // 3x multiplier for incredibly crisp, high-resolution text
-                    cacheBust: true,
+                    backgroundColor: '#111318',
                 });
 
                 // Convert to Image & Download
@@ -409,7 +415,7 @@
 
             } catch (err) {
                 console.error("Error generating image:", err);
-                alert("There was an error generating the image. Check console for details.");
+                alert("There was an error generating the image. Please try again or check the browser console.");
             } finally {
                 // Restore dynamic sizing
                 bannerCapture.style.width = '100%';
