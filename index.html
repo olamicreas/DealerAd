@@ -139,7 +139,7 @@
                 <!-- Bottom Banner Details -->
                 <section class="space-y-4">
                     <h2 class="text-sm font-bold tracking-wider text-gray-400 uppercase flex items-center gap-2">
-                        <i data-lucide="settings" class="w-4 h-4"></i> Bottom Details & Overlay
+                        <i data-lucide="settings" class="w-4 h-4"></i> Bottom Details & Website
                     </h2>
                     
                     <div class="space-y-3">
@@ -149,7 +149,7 @@
                                 <input type="text" id="dealershipNameInput" value="OLA MOTORS" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Website Overlay</label>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Website</label>
                                 <input type="text" id="websiteInput" value="WWW.OLAMOTORSUS.COM" class="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold" />
                             </div>
                         </div>
@@ -183,7 +183,6 @@
                     <div id="banner-capture" style="container-type: inline-size; width: 100%;" class="@container aspect-square relative flex flex-col bg-[#111318] overflow-hidden banner-font">
                         
                         <!-- --- TOP BANNER --- -->
-                        <!-- Adjusted height slightly to 21% to fit 3 lines perfectly -->
                         <div class="h-[21%] w-full bg-[#111318] relative z-20 flex items-center shadow-2xl shrink-0">
                             <!-- Left edge angled accents -->
                             <div class="absolute left-[-2cqi] top-0 h-full w-[3cqi] bg-[#dc2626] -skew-x-[15deg]"></div>
@@ -235,10 +234,8 @@
 
                         <!-- --- MIDDLE IMAGE --- -->
                         <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
-                            <!-- Included crossorigin="anonymous" to safely render external URL -->
                             <img 
                                 id="carImageDisplay"
-                                crossorigin="anonymous"
                                 src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop" 
                                 alt="Vehicle" 
                                 class="absolute inset-0 w-full h-full object-cover"
@@ -246,29 +243,23 @@
                             />
                             <!-- Inner shadows -->
                             <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
-                            <div class="absolute inset-x-0 bottom-0 h-[10cqi] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
-
-                            <!-- Website Overlay: Plain White, Original Font -->
-                            <div class="absolute inset-x-0 bottom-[2.5cqi] z-20 flex justify-center w-full px-[4cqi]">
-                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase tracking-widest whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
-                                    WWW.OLAMOTORSUS.COM
-                                </span>
-                            </div>
+                            <div class="absolute inset-x-0 bottom-0 h-[5cqi] bg-gradient-to-t from-black/40 to-transparent z-10"></div>
+                            <!-- Removed the website overlay from here -->
                         </div>
 
                         <!-- --- BOTTOM BANNER --- -->
-                        <!-- Adjusted to 16% to fit Badge + Address -->
+                        <!-- Adjusted to 16% height to comfortably fit the two rows on the right -->
                         <div class="h-[16%] w-full bg-[#111318] relative z-20 flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.3)] shrink-0">
                             <!-- Top separator line -->
                             <div class="absolute top-0 left-0 w-full h-[0.5cqi] bg-white opacity-80"></div>
                             
-                            <!-- Blue skewed divider -->
-                            <div class="absolute left-[68cqi] bottom-0 h-full w-[1.5cqi] bg-[#1e40af] -skew-x-[20deg] z-0 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]"></div>
+                            <!-- Blue skewed divider (Shifted slightly left to make room for website) -->
+                            <div class="absolute left-[62cqi] bottom-0 h-full w-[1.5cqi] bg-[#1e40af] -skew-x-[20deg] z-0 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]"></div>
 
                             <div class="w-full flex items-center justify-between px-[4cqi] relative z-10 h-full">
                                 
                                 <!-- Bottom Left Content (Dealership Badge & Address) -->
-                                <div class="flex flex-col justify-center gap-[0.5cqi] w-[62cqi]">
+                                <div class="flex flex-col justify-center gap-[0.5cqi] w-[56cqi]">
                                     
                                     <!-- Dealership Red Badge -->
                                     <div class="flex items-center gap-[1.5cqi]">
@@ -281,24 +272,31 @@
                                     </div>
                                     
                                     <!-- Address -->
-                                    <span id="addressDisplay" class="text-[#8bbbe4] text-[4cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi] mt-[0.5cqi]">
+                                    <span id="addressDisplay" class="text-[#8bbbe4] text-[3.8cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi] mt-[0.5cqi]">
                                         2760 GOVERNMENT BLVD MOBILE AL 36606
                                     </span>
                                 </div>
 
-                                <!-- Bottom Right Content (Phone) -->
-                                <div class="flex flex-col justify-center items-start w-[28cqi] pl-[2cqi]">
+                                <!-- Bottom Right Content (Phone & Website) -->
+                                <div class="flex flex-col justify-center items-start w-[34cqi] pl-[2.5cqi]">
+                                    
+                                    <!-- Phone Block -->
                                     <div class="flex items-center gap-[1cqi]">
-                                        <span class="text-white text-[4cqi] font-sans">📞</span>
+                                        <span class="text-white text-[3.5cqi] font-sans">📞</span>
                                         <div class="flex flex-col">
-                                            <span id="callLabelDisplay" class="text-[#8bbbe4] text-[3cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap mb-[0.2cqi]">
+                                            <span id="callLabelDisplay" class="text-[#8bbbe4] text-[2.6cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap mb-[0.1cqi]">
                                                 CALL
                                             </span>
-                                            <span id="phoneDisplay" class="text-white text-[3.5cqi] font-[900] italic uppercase leading-[0.85] tracking-tight whitespace-nowrap">
+                                            <span id="phoneDisplay" class="text-white text-[3.2cqi] font-[900] italic uppercase leading-[0.85] tracking-tight whitespace-nowrap">
                                                 251-287-1062
                                             </span>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Website (Moved back to the bottom line!) -->
+                                    <span id="websiteDisplay" class="text-white text-[2.8cqi] font-[900] italic uppercase tracking-widest whitespace-nowrap mt-[0.8cqi]">
+                                        WWW.OLAMOTORSUS.COM
+                                    </span>
                                 </div>
 
                             </div>
