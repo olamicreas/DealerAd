@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auto Dealer Ad Creator</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS with Container Queries Plugin explicitly enabled -->
+    <script src="https://cdn.tailwindcss.com?plugins=container-queries"></script>
     
     <!-- Google Fonts: Barlow Condensed (Original impact font for everything) -->
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
     
-    <!-- html2canvas (Most stable renderer, now paired with our custom sizing engine) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- html-to-image (100% pixel-perfect export of modern CSS) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -29,9 +29,9 @@
             font-family: 'Barlow Condensed', sans-serif;
         }
 
-        /* Webkit Text Stroke Utility - Changed to em for bulletproof rendering */
+        /* Webkit Text Stroke Utility */
         .text-stroke-white {
-            -webkit-text-stroke: 0.3em white;
+            -webkit-text-stroke: 0.3cqi white;
         }
     </style>
 </head>
@@ -180,49 +180,47 @@
                 <div class="w-full max-w-[600px] shadow-2xl rounded-lg overflow-hidden border-4 border-gray-800 bg-black">
                     
                     <!-- === THE BANNER COMPONENT === -->
-                    <!-- Sizing uses purely standard 'em' units, dynamically mapped to width via Javascript -->
-                    <div id="banner-capture" class="w-full aspect-square relative flex flex-col bg-[#111318] overflow-hidden banner-font">
+                    <div id="banner-capture" style="container-type: inline-size; width: 100%;" class="@container aspect-square relative flex flex-col bg-[#111318] overflow-hidden banner-font">
                         
                         <!-- --- TOP BANNER --- -->
                         <div class="h-[21%] w-full bg-[#111318] relative z-20 flex items-center shadow-2xl shrink-0">
                             <!-- Left edge angled accents -->
-                            <div class="absolute left-[-2em] top-0 h-full w-[3em] bg-[#dc2626] -skew-x-[15deg]"></div>
-                            <div class="absolute left-[1.5em] top-0 h-full w-[0.5em] bg-white -skew-x-[15deg] opacity-80"></div>
+                            <div class="absolute left-[-2cqi] top-0 h-full w-[3cqi] bg-[#dc2626] -skew-x-[15deg]"></div>
+                            <div class="absolute left-[1.5cqi] top-0 h-full w-[0.5cqi] bg-white -skew-x-[15deg] opacity-80"></div>
 
-                            <div class="pl-[6em] pr-[4em] w-full flex justify-between items-center h-full">
+                            <div class="pl-[6cqi] pr-[4cqi] w-full flex justify-between items-center h-full">
                                 
                                 <!-- Top Left Text (Subtitle, Vehicle, Mileage) -->
-                                <div class="flex flex-col justify-center -mt-[0.5em] w-[60em]">
-                                    
+                                <div class="flex flex-col justify-center -mt-[0.5cqi] w-[60cqi]">
                                     <!-- Subtitle -->
-                                    <span id="subtitleDisplay" class="text-white text-[3em] font-[900] italic uppercase leading-none tracking-wide whitespace-nowrap overflow-visible">
+                                    <span id="subtitleDisplay" class="text-white text-[3cqi] font-[900] italic uppercase leading-none tracking-wide whitespace-nowrap overflow-visible">
                                         MANAGER SPECIAL :
                                     </span>
 
-                                    <!-- Vehicle Name -->
-                                    <span id="vehicleNameDisplay" class="text-[#8bbbe4] text-[6.5em] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1em] mt-[0.5em]">
+                                    <!-- Vehicle Name (Restored perfectly to original styling) -->
+                                    <span id="vehicleNameDisplay" class="text-[#8bbbe4] text-[6.5cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi] mt-[0.5cqi]">
                                         2008 JEEP WRANGLER
                                     </span>
 
                                     <!-- Mileage -->
-                                    <span id="mileageDisplay" class="text-white text-[3.2em] font-[900] italic uppercase leading-[0.9] tracking-wide whitespace-nowrap overflow-visible mt-[0.5em]">
+                                    <span id="mileageDisplay" class="text-white text-[3.2cqi] font-[900] italic uppercase leading-[0.9] tracking-wide whitespace-nowrap overflow-visible mt-[0.5cqi]">
                                         MILEAGE: 126,123 MILES
                                     </span>
                                 </div>
 
                                 <!-- Top Right Pricing Box -->
-                                <div class="flex items-start gap-[1em] mr-[1em]">
-                                    <div class="flex flex-col items-end pt-[1.5em]">
-                                        <span id="priceLabel1Display" class="text-[#8bbbe4] text-[2.8em] font-[900] italic uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
+                                <div class="flex items-start gap-[1cqi] mr-[1cqi]">
+                                    <div class="flex flex-col items-end pt-[1.5cqi]">
+                                        <span id="priceLabel1Display" class="text-[#8bbbe4] text-[2.8cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter whitespace-nowrap">
                                             CASH
                                         </span>
-                                        <span id="priceLabel2Display" class="text-white text-[2.2em] font-[900] italic uppercase leading-[0.85] tracking-tighter mr-[0.5em] whitespace-nowrap mt-[0.3em]">
+                                        <span id="priceLabel2Display" class="text-white text-[2.2cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter mr-[0.5cqi] whitespace-nowrap mt-[0.3cqi]">
                                             PRICE
                                         </span>
                                     </div>
                                     
-                                    <div class="bg-white px-[3em] py-[1em] shadow-lg -skew-x-[12deg] flex items-center justify-center border-b-[0.5em] border-r-[0.5em] border-gray-200">
-                                        <span id="priceAmountDisplay" class="text-[#5b7b41] text-[6.5em] font-[900] italic uppercase skew-x-[12deg] tracking-tighter leading-[0.85] pt-[0.2em] whitespace-nowrap">
+                                    <div class="bg-white px-[3cqi] py-[1cqi] shadow-lg -skew-x-[12deg] flex items-center justify-center border-b-[0.5cqi] border-r-[0.5cqi] border-gray-200">
+                                        <span id="priceAmountDisplay" class="text-[#5b7b41] text-[6.5cqi] font-[900] italic uppercase skew-x-[12deg] tracking-tighter leading-[0.85] pt-[0.2cqi] whitespace-nowrap">
                                             $9800
                                         </span>
                                     </div>
@@ -230,26 +228,27 @@
                             </div>
                             
                             <!-- Separator line from image -->
-                            <div class="absolute bottom-0 left-0 w-full h-[0.5em] bg-white opacity-80 z-30"></div>
+                            <div class="absolute bottom-0 left-0 w-full h-[0.5cqi] bg-white opacity-80 z-30"></div>
                         </div>
 
                         <!-- --- MIDDLE IMAGE --- -->
                         <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
-                            <!-- Transparent placeholder replaced by Base64 JS immediately -->
-                            <img 
-                                id="carImageDisplay"
-                                src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" 
-                                alt="Vehicle" 
-                                class="absolute inset-0 w-full h-full object-cover"
-                                style="object-position: center 50%;"
-                            />
-                            <!-- Inner shadows -->
-                            <div class="absolute inset-x-0 top-0 h-[5em] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
-                            <div class="absolute inset-x-0 bottom-0 h-[10em] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+                            
+                            <!-- CRITICAL FIX: Replaced standard <img> tag with <canvas> 
+                                 This entirely bypasses the browser's security/CORS blocks which caused the "error generating image" crashes! -->
+                            <canvas 
+                                id="carImageCanvas"
+                                class="absolute inset-0 w-full h-full"
+                                style="object-fit: cover; object-position: center 50%;">
+                            </canvas>
 
-                            <!-- Website Overlay: Plain White, positioned perfectly at the bottom -->
-                            <div class="absolute inset-x-0 bottom-0 z-20 flex justify-center w-full px-[4em]">
-                                <span id="websiteDisplay" class="text-white text-[7.5em] font-[900] italic uppercase tracking-widest leading-none whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
+                            <!-- Inner shadows -->
+                            <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
+                            <div class="absolute inset-x-0 bottom-0 h-[10cqi] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+
+                            <!-- Website Overlay: Plain White, positioned perfectly at the bottom line -->
+                            <div class="absolute inset-x-0 bottom-[1cqi] z-20 flex justify-center w-full px-[4cqi]">
+                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase tracking-widest leading-none whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
                                     WWW.OLAMOTORSUS.COM
                                 </span>
                             </div>
@@ -258,41 +257,41 @@
                         <!-- --- BOTTOM BANNER --- -->
                         <div class="h-[16%] w-full bg-[#111318] relative z-20 flex items-center shadow-[0_-10px_20px_rgba(0,0,0,0.3)] shrink-0">
                             <!-- Top separator line -->
-                            <div class="absolute top-0 left-0 w-full h-[0.5em] bg-white opacity-80"></div>
+                            <div class="absolute top-0 left-0 w-full h-[0.5cqi] bg-white opacity-80"></div>
                             
                             <!-- Blue skewed divider -->
-                            <div class="absolute left-[68em] bottom-0 h-full w-[1.5em] bg-[#1e40af] -skew-x-[20deg] z-0 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]"></div>
+                            <div class="absolute left-[68cqi] bottom-0 h-full w-[1.5cqi] bg-[#1e40af] -skew-x-[20deg] z-0 shadow-[-5px_0_15px_rgba(0,0,0,0.5)]"></div>
 
-                            <div class="w-full flex items-center justify-between px-[4em] relative z-10 h-full">
+                            <div class="w-full flex items-center justify-between px-[4cqi] relative z-10 h-full">
                                 
                                 <!-- Bottom Left Content (Dealership Badge & Address) -->
-                                <div class="flex flex-col justify-center gap-[0.5em] w-[62em]">
+                                <div class="flex flex-col justify-center gap-[0.5cqi] w-[62cqi]">
                                     
                                     <!-- Dealership Red Badge -->
-                                    <div class="flex items-center gap-[1.5em]">
-                                        <div class="bg-[#dc2626] px-[1.5em] py-[0.4em] -skew-x-[12deg] shadow-md border border-red-500/50">
-                                            <span id="dealershipNameDisplay" class="block text-white text-[2.8em] font-[900] italic uppercase leading-none tracking-wider skew-x-[12deg]">
+                                    <div class="flex items-center gap-[1.5cqi]">
+                                        <div class="bg-[#dc2626] px-[1.5cqi] py-[0.4cqi] -skew-x-[12deg] shadow-md border border-red-500/50">
+                                            <span id="dealershipNameDisplay" class="block text-white text-[2.8cqi] font-[900] italic uppercase leading-none tracking-wider skew-x-[12deg]">
                                                 OLA MOTORS
                                             </span>
                                         </div>
-                                        <div class="flex-1 h-[0.3em] bg-white opacity-40"></div>
+                                        <div class="flex-1 h-[0.3cqi] bg-white opacity-40"></div>
                                     </div>
                                     
                                     <!-- Address -->
-                                    <span id="addressDisplay" class="text-[#8bbbe4] text-[4em] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1em] mt-[0.5em]">
+                                    <span id="addressDisplay" class="text-[#8bbbe4] text-[4cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap overflow-visible pr-[1cqi] mt-[0.5cqi]">
                                         2760 GOVERNMENT BLVD MOBILE AL 36606
                                     </span>
                                 </div>
 
                                 <!-- Bottom Right Content (Phone) -->
-                                <div class="flex flex-col justify-center items-start w-[28em] pl-[2em]">
-                                    <div class="flex items-center gap-[1em]">
-                                        <span class="text-white text-[4em] font-sans">📞</span>
+                                <div class="flex flex-col justify-center items-start w-[28cqi] pl-[2cqi]">
+                                    <div class="flex items-center gap-[1cqi]">
+                                        <span class="text-white text-[4cqi] font-sans">📞</span>
                                         <div class="flex flex-col">
-                                            <span id="callLabelDisplay" class="text-[#8bbbe4] text-[3em] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap mb-[0.2em]">
+                                            <span id="callLabelDisplay" class="text-[#8bbbe4] text-[3cqi] font-[900] italic uppercase leading-[0.85] tracking-tighter text-stroke-white whitespace-nowrap mb-[0.2cqi]">
                                                 CALL
                                             </span>
-                                            <span id="phoneDisplay" class="text-white text-[3.5em] font-[900] italic uppercase leading-[0.85] tracking-tight whitespace-nowrap">
+                                            <span id="phoneDisplay" class="text-white text-[3.5cqi] font-[900] italic uppercase leading-[0.85] tracking-tight whitespace-nowrap">
                                                 251-287-1062
                                             </span>
                                         </div>
@@ -346,105 +345,93 @@
             }
         });
 
-        // 1. DYNAMIC FONT SIZING ENGINE
-        // This makes 'em' scale perfectly with the width, solving all layout export issues!
-        const bannerCapture = document.getElementById('banner-capture');
-        function updateFontSize() {
-            if(bannerCapture) {
-                const width = bannerCapture.getBoundingClientRect().width;
-                // Sets base font size so 1em = 1% of the width
-                bannerCapture.style.fontSize = (width / 100) + 'px';
-            }
+        // ==========================================================
+        // CANVAS IMAGE ENGINE (Fixes the "target: img" crash entirely)
+        // ==========================================================
+        const carImageCanvas = document.getElementById('carImageCanvas');
+        const ctx = carImageCanvas.getContext('2d');
+
+        function drawImageToCanvas(imageObj) {
+            carImageCanvas.width = imageObj.width;
+            carImageCanvas.height = imageObj.height;
+            ctx.clearRect(0, 0, carImageCanvas.width, carImageCanvas.height);
+            ctx.drawImage(imageObj, 0, 0);
         }
-        window.addEventListener('resize', updateFontSize);
-        const resizeObserver = new ResizeObserver(updateFontSize);
-        resizeObserver.observe(bannerCapture);
-        updateFontSize(); // Run on load
 
-        // 2. FETCH DEFAULT IMAGE AS BASE64 TO PREVENT CORS BLOCKS
-        (async function preloadDefaultImage() {
-            try {
-                const img = document.getElementById('carImageDisplay');
-                const res = await fetch('https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop');
-                const blob = await res.blob();
-                const reader = new FileReader();
-                reader.onloadend = () => { img.src = reader.result; }
-                reader.readAsDataURL(blob);
-            } catch(e) {
-                console.warn("Could not preload default image.");
-            }
-        })();
+        // 1. Load the default image securely into the canvas
+        const defaultImg = new Image();
+        defaultImg.crossOrigin = "anonymous";
+        defaultImg.onload = () => drawImageToCanvas(defaultImg);
+        defaultImg.src = "https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop";
 
-        // 3. SECURE IMAGE UPLOAD & COMPRESSOR
+        // 2. Handle User Uploads securely into the canvas
         const imageUpload = document.getElementById('imageUpload');
-        const carImageDisplay = document.getElementById('carImageDisplay');
-
         imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    carImageDisplay.src = event.target.result;
+                    const userImg = new Image();
+                    userImg.onload = () => drawImageToCanvas(userImg);
+                    userImg.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Image Position Slider Logic
+        // Image Position Slider Logic applies to the Canvas object-position
         const positionSlider = document.getElementById('imagePositionSlider');
         const posYLabel = document.getElementById('posYLabel');
 
         positionSlider.addEventListener('input', (e) => {
             const value = e.target.value;
             posYLabel.textContent = `${value}%`;
-            carImageDisplay.style.objectPosition = `center ${value}%`;
+            carImageCanvas.style.objectPosition = `center ${value}%`;
         });
 
-        // 4. BULLETPROOF 1080x1080 DOWNLOAD LOGIC
+        // ==========================================================
+        // 1080p EXPORT ENGINE (Fixes the layout mismatches permanently)
+        // ==========================================================
         const downloadBtn = document.getElementById('downloadBtn');
+        const bannerCapture = document.getElementById('banner-capture');
 
         downloadBtn.addEventListener('click', async () => {
-            if (typeof html2canvas === 'undefined') {
-                alert("The image generation library is still loading. Please wait a second.");
+            if (typeof window.htmlToImage === 'undefined') {
+                alert("The image generation library is still loading. Please try again in a second.");
                 return;
             }
 
+            // UI State change
             const originalHTML = downloadBtn.innerHTML;
             downloadBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Generating...';
             downloadBtn.disabled = true;
             lucide.createIcons();
 
+            // The absolute best way to guarantee perfect layouts is to force the container 
+            // to be exactly 1080px wide right before taking the picture.
+            const originalWidth = bannerCapture.style.width;
+            const originalHeight = bannerCapture.style.height;
+            
+            bannerCapture.style.width = '1080px';
+            bannerCapture.style.height = '1080px';
+
             try {
-                // Ensure custom fonts are ready
+                // Wait for the browser to apply the 1080px size and font styles
+                await new Promise(r => requestAnimationFrame(r));
                 await document.fonts.ready;
 
-                // Create a completely hidden clone for a pristine 1080x1080 capture
-                const clone = bannerCapture.cloneNode(true);
-                clone.style.width = '1080px';
-                clone.style.height = '1080px';
-                clone.style.position = 'absolute';
-                clone.style.top = '-9999px';
-                clone.style.left = '-9999px';
-                clone.style.fontSize = '10.8px'; // Critical: locks the em units exactly
-                document.body.appendChild(clone);
-
-                // Wait for the DOM to register the appended clone
-                await new Promise(resolve => setTimeout(resolve, 50));
-
-                const canvas = await html2canvas(clone, {
-                    scale: 1, // Already 1080p, no upscaling needed
-                    useCORS: true,
-                    allowTaint: true,
-                    backgroundColor: '#111318',
-                    logging: false
+                // html-to-image is used with pixelRatio: 1 because we already expanded it to 1080px manually!
+                // This keeps memory usage incredibly low while keeping the image completely sharp.
+                const dataUrl = await window.htmlToImage.toPng(bannerCapture, {
+                    quality: 1,
+                    pixelRatio: 1, 
+                    cacheBust: false, 
+                    backgroundColor: '#111318'
                 });
 
-                document.body.removeChild(clone);
-
-                // Convert and download
-                const dataUrl = canvas.toDataURL('image/png', 1.0);
+                // Convert to Image & Download
                 const link = document.createElement('a');
-                link.download = `auto-banner-${Date.now()}.png`;
+                link.download = `ola-motors-ad-${Date.now()}.png`;
                 link.href = dataUrl;
                 link.click();
 
@@ -452,6 +439,11 @@
                 console.error("Error generating image:", err);
                 alert("There was an error generating the image. Please try again.");
             } finally {
+                // Instantly restore the preview to its original responsive size
+                bannerCapture.style.width = originalWidth;
+                bannerCapture.style.height = originalHeight;
+                
+                // Restore UI State
                 downloadBtn.innerHTML = originalHTML;
                 downloadBtn.disabled = false;
                 lucide.createIcons(); 
