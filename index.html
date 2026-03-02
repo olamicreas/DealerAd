@@ -235,21 +235,21 @@
 
                         <!-- --- MIDDLE IMAGE --- -->
                         <div class="flex-1 min-h-0 w-full relative bg-gray-900 z-10">
+                            <!-- Removed crossorigin attribute to prevent CORS clashes with the new base64 compression -->
                             <img 
                                 id="carImageDisplay"
                                 src="https://images.unsplash.com/photo-1550355291-bbee04a92027?q=80&w=1080&auto=format&fit=crop" 
                                 alt="Vehicle" 
                                 class="absolute inset-0 w-full h-full object-cover"
                                 style="object-position: center 50%;"
-                                crossorigin="anonymous"
                             />
                             <!-- Inner shadows -->
                             <div class="absolute inset-x-0 top-0 h-[5cqi] bg-gradient-to-b from-black/30 to-transparent z-10"></div>
                             <div class="absolute inset-x-0 bottom-0 h-[10cqi] bg-gradient-to-t from-black/60 to-transparent z-10"></div>
 
-                            <!-- Website Overlay: Pushed all the way down to the line -->
-                            <div class="absolute inset-x-0 bottom-[0.5cqi] z-20 flex justify-center w-full px-[4cqi]">
-                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase leading-none tracking-widest whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
+                            <!-- Website Overlay: Made Plain White, original font -->
+                            <div class="absolute inset-x-0 bottom-[2.5cqi] z-20 flex justify-center w-full px-[4cqi]">
+                                <span id="websiteDisplay" class="text-white text-[7.5cqi] font-[900] italic uppercase tracking-widest whitespace-nowrap overflow-visible opacity-100 drop-shadow-md">
                                     WWW.OLAMOTORSUS.COM
                                 </span>
                             </div>
@@ -348,8 +348,8 @@
         });
 
         // FIX FOR DOWNLOAD ERRORS:
-        // Convert the uploaded image directly to a Base64 string instead of a temporary blob URL.
-        // This entirely bypasses browser CORS/Security blocks during image export.
+        // Use a Canvas to automatically downscale large phone images to a maximum of 1200px.
+        // This prevents the massive base64 string from crashing the html-to-image renderer.
         const imageUpload = document.getElementById('imageUpload');
         const carImageDisplay = document.getElementById('carImageDisplay');
 
@@ -358,10 +358,38 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    // Set the image source directly to the Base64 data string
-                    carImageDisplay.src = event.target.result;
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 1200; // Safe size to prevent rendering crashes
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Calculate aspect ratio while keeping within 1200px bounds
+                        if (width > height) {
+                            if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                            }
+                        } else {
+                            if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                            }
+                        }
+
+                        // Draw and compress
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Set optimized image
+                        carImageDisplay.src = canvas.toDataURL('image/jpeg', 0.85);
+                    };
+                    img.src = event.target.result;
                 };
-                reader.readAsDataURL(file); // Start reading the file
+                reader.readAsDataURL(file);
             }
         });
 
@@ -375,7 +403,7 @@
             carImageDisplay.style.objectPosition = `center ${value}%`;
         });
 
-        // Download Banner Logic (Switched to html-to-image for 100% pixel-perfect accuracy)
+        // Download Banner Logic
         const downloadBtn = document.getElementById('downloadBtn');
         const bannerCapture = document.getElementById('banner-capture');
 
@@ -400,11 +428,12 @@
                 // Wait for custom fonts to fully render
                 await document.fonts.ready;
 
-                // htmlToImage settings (Removed cacheBust as it interferes with Base64 blobs)
+                // htmlToImage settings. We provide an empty imagePlaceholder just in case to prevent hard crashes.
                 const dataUrl = await window.htmlToImage.toPng(bannerCapture, {
                     quality: 1,
-                    pixelRatio: 3, // 3x multiplier for incredibly crisp, high-resolution text
+                    pixelRatio: 3, 
                     backgroundColor: '#111318',
+                    imagePlaceholder: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
                 });
 
                 // Convert to Image & Download
@@ -415,7 +444,7 @@
 
             } catch (err) {
                 console.error("Error generating image:", err);
-                alert("There was an error generating the image. Please try again or check the browser console.");
+                alert("There was an error generating the image. Please try again.");
             } finally {
                 // Restore dynamic sizing
                 bannerCapture.style.width = '100%';
